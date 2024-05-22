@@ -6,7 +6,8 @@ private:
     struct Node {
         T data;
         Node* next;
-        Node(const T& val) : data(val), next(nullptr) {}
+        Node* prev;
+        Node(const T& val) : data(val), next(nullptr), prev(nullptr) {}
     };
 
     Node* front;
@@ -14,6 +15,7 @@ private:
 
 public:
     TemplateQueue() : front(nullptr), rear(nullptr) {}
+
     void enqueue(const T& val) {
         Node* newNode = new Node(val);
         if (rear == nullptr) {
@@ -21,9 +23,11 @@ public:
         }
         else {
             rear->next = newNode;
+            newNode->prev = rear;
             rear = newNode;
         }
     }
+
     void dequeue() {
         if (isEmpty()) {
             std::cerr << "Queue is empty, cannot dequeue.\n";
@@ -31,18 +35,19 @@ public:
         else {
             Node* temp = front;
             front = front->next;
-            delete temp;
-            if (front == nullptr) {
+            if (front != nullptr) {
+                front->prev = nullptr;
+            }
+            else {
                 rear = nullptr;
             }
+            delete temp;
         }
     }
-
 
     bool isEmpty() const {
         return front == nullptr;
     }
-
 
     T peek() const {
         if (isEmpty()) {
@@ -53,6 +58,7 @@ public:
             return front->data;
         }
     }
+
     void show() const {
         Node* temp = front;
         std::cout << "Queue elements: ";
@@ -62,6 +68,7 @@ public:
         }
         std::cout << std::endl;
     }
+
     ~TemplateQueue() {
         while (!isEmpty()) {
             dequeue();
